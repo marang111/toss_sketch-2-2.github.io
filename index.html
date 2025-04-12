@@ -32,7 +32,7 @@
       position: relative;
       transform-style: preserve-3d;
       transform: rotateY(0deg);
-      transition: transform 0.6s ease;
+      transition: transform 0.3s ease-out;
     }
 
     .face {
@@ -82,6 +82,12 @@
       background-color: red;
       margin-bottom: 20px;
     }
+
+    p {
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
   </style>
 </head>
 <body>
@@ -95,9 +101,7 @@
         <div class="title">“승진 피하고 ‘만년 사원’ 하고 싶어요”...늘어나는 ‘오피스 피터팬’</div>
         <div class="title">"우리는 AI를 가장 잘 만들지도, 가장 잘 사용하지도 못해"</div>
       </div>
-      <div class="face back">
-        
-      </div>
+      <div class="face back"></div>
       <div class="face left"></div>
       <div class="face right">
         <p>김정은 북한 국무위원장이 윤석열 전 대통령의 탄핵이 인용된 4일 특수작전부대 훈련을 시찰하고 싸움 준비를 강조했다.</p>
@@ -113,54 +117,59 @@
 
   <script>
     const cube = document.getElementById('cube');
-    let currentRotation = 0;
     let isDragging = false;
     let startX = 0;
+    let currentRotation = 0;
+    let tempRotation = 0;
 
-    // PC용 마우스 이벤트
-    document.addEventListener('mousedown', (e) => {
+    const updateRotation = (angle) => {
+      cube.style.transform = `rotateY(${angle}deg)`;
+    };
+
+    const snapToNearest = () => {
+      currentRotation = Math.round(tempRotation / 90) * 90;
+      updateRotation(currentRotation);
+    };
+
+    const handleMove = (clientX) => {
+      const delta = clientX - startX;
+      tempRotation = currentRotation + delta / 2;
+      updateRotation(tempRotation);
+    };
+
+    const startDrag = (x) => {
       isDragging = true;
-      startX = e.clientX;
-    });
+      startX = x;
+      cube.style.transition = 'none';
+    };
 
-    document.addEventListener('mouseup', (e) => {
+    const moveDrag = (x) => {
+      if (!isDragging) return;
+      handleMove(x);
+    };
+
+    const endDrag = () => {
       if (!isDragging) return;
       isDragging = false;
-      const diffX = e.clientX - startX;
+      cube.style.transition = 'transform 0.3s ease-out';
+      snapToNearest();
+    };
 
-      if (Math.abs(diffX) > 50) {
-        if (diffX > 0) {
-          currentRotation -= 90;
-        } else {
-          currentRotation += 90;
-        }
-        cube.style.transform = `rotateY(${currentRotation}deg)`;
-      }
-    });
+    // 데스크탑
+    document.addEventListener('mousedown', (e) => startDrag(e.clientX));
+    document.addEventListener('mousemove', (e) => moveDrag(e.clientX));
+    document.addEventListener('mouseup', endDrag);
 
-    // 모바일용 터치 이벤트
+    // 모바일
     document.addEventListener('touchstart', (e) => {
-      if (e.touches.length === 1) {
-        isDragging = true;
-        startX = e.touches[0].clientX;
-      }
+      if (e.touches.length === 1) startDrag(e.touches[0].clientX);
     });
 
-    document.addEventListener('touchend', (e) => {
-      if (!isDragging) return;
-      isDragging = false;
-      const endX = e.changedTouches[0].clientX;
-      const diffX = endX - startX;
-
-      if (Math.abs(diffX) > 50) {
-        if (diffX > 0) {
-          currentRotation -= 90;
-        } else {
-          currentRotation += 90;
-        }
-        cube.style.transform = `rotateY(${currentRotation}deg)`;
-      }
+    document.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 1) moveDrag(e.touches[0].clientX);
     });
+
+    document.addEventListener('touchend', endDrag);
   </script>
 
 </body>
