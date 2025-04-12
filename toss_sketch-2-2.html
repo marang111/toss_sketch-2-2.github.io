@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>정육면체 뉴스 인터페이스</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      perspective: 1200px;
+      font-family: 'Pretendard Variable', sans-serif;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .scene {
+      width: 414px;
+      height: 896px;
+      position: relative;
+      transform-style: preserve-3d;
+    }
+
+    .cube {
+      width: 414px;
+      height: 896px;
+      position: relative;
+      transform-style: preserve-3d;
+      transform: rotateY(0deg);
+      transition: transform 0.6s ease;
+    }
+
+    .face {
+      position: absolute;
+      width: 414px;
+      height: 896px;
+      background: white;
+      box-sizing: border-box;
+      border: 2px solid black;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .front {
+      transform: rotateY(0deg) translateZ(207px);
+    }
+
+    .back {
+      transform: rotateY(180deg) translateZ(207px);
+    }
+
+    .left {
+      transform: rotateY(-90deg) translateZ(207px);
+      background: #f0f0f0;
+    }
+
+    .right {
+      transform: rotateY(90deg) translateZ(207px);
+      background: #f0f0f0;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 16px;
+      line-height: 1.4;
+    }
+
+    .img {
+      width: 100%;
+      height: 300px;
+      background-image: url('img.png');
+      background-size: cover;
+      background-color: red;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="scene">
+    <div class="cube" id="cube">
+      <div class="face front">
+        <div class="title">김정은도 신기한 듯 만져봤다 …北 특수부대, 드론 피하는 방법?</div>
+        <div class="img"></div>
+        <div class="title">토요일 3시? 애매한 결혼식 시간에 대처하는 우리의 자세</div>
+        <div class="title">“승진 피하고 ‘만년 사원’ 하고 싶어요”...늘어나는 ‘오피스 피터팬’</div>
+        <div class="title">"우리는 AI를 가장 잘 만들지도, 가장 잘 사용하지도 못해"</div>
+      </div>
+      <div class="face back">
+        
+      </div>
+      <div class="face left"></div>
+      <div class="face right">
+        <p>김정은 북한 국무위원장이 윤석열 전 대통령의 탄핵이 인용된 4일 특수작전부대 훈련을 시찰하고 싸움 준비를 강조했다.</p>
+        <p>현대전에서 중요한 드론 공격을 피하는 방법을 탐구 중이라는 관측도 나온다.</p>
+        <p>사진을 보면, 머리부터 발끝까지 수풀로 위장한 특수부대원들이 훈련을 하고 있다.</p>
+        <p>수풀 위장을 통해 드론에 발각되는 것을 피하려는 의도로 풀이된다.</p>
+        <p>김정은이 가까이 다가가 만져보는 모습도 공개됐다.</p>
+        <p>“싸움 준비 완성이 국가와 인민에 대한 제일가는 애국심이고 충성심”이라며 투철한 사상 무장을 강조했다고 전했다.</p>
+        <p>북한이 말하는 현대전은 러시아-우크라이나 전쟁에서 행해지는 드론전을 의미한다는 분석도 있다.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const cube = document.getElementById('cube');
+    let currentRotation = 0;
+    let isDragging = false;
+    let startX = 0;
+
+    // PC용 마우스 이벤트
+    document.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.clientX;
+    });
+
+    document.addEventListener('mouseup', (e) => {
+      if (!isDragging) return;
+      isDragging = false;
+      const diffX = e.clientX - startX;
+
+      if (Math.abs(diffX) > 50) {
+        if (diffX > 0) {
+          currentRotation -= 90;
+        } else {
+          currentRotation += 90;
+        }
+        cube.style.transform = `rotateY(${currentRotation}deg)`;
+      }
+    });
+
+    // 모바일용 터치 이벤트
+    document.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        startX = e.touches[0].clientX;
+      }
+    });
+
+    document.addEventListener('touchend', (e) => {
+      if (!isDragging) return;
+      isDragging = false;
+      const endX = e.changedTouches[0].clientX;
+      const diffX = endX - startX;
+
+      if (Math.abs(diffX) > 50) {
+        if (diffX > 0) {
+          currentRotation -= 90;
+        } else {
+          currentRotation += 90;
+        }
+        cube.style.transform = `rotateY(${currentRotation}deg)`;
+      }
+    });
+  </script>
+
+</body>
+</html>
